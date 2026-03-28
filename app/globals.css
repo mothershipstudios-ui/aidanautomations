@@ -1,0 +1,64 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Accessibility: Respect prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Smooth transitions for interactive elements */
+button,
+a,
+input,
+select,
+textarea {
+  transition: all 200ms ease-out;
+}
+
+/* Focus styles for accessibility */
+:focus-visible {
+  outline: 2px solid #00d9ff;
+  outline-offset: 2px;
+}
+
+@layer components {
+  .btn-primary {
+    @apply px-6 py-3 bg-primary text-white font-semibold rounded-md text-base hover:bg-cyan transition-all duration-200 cursor-pointer flex items-center justify-center;
+  }
+
+  .btn-secondary {
+    @apply px-6 py-3 border-2 border-primary text-primary font-semibold rounded-md text-base hover:bg-blue-50 transition-all duration-200 cursor-pointer flex items-center justify-center;
+  }
+
+  .btn-ghost {
+    @apply text-primary font-semibold hover:text-cyan underline decoration-2 underline-offset-2 transition-colors duration-200 cursor-pointer;
+  }
+
+  .container-main {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  .section-padding {
+    @apply py-12 sm:py-16 lg:py-20;
+  }
+
+  .feature-card {
+    @apply bg-white border border-gray-200 rounded-lg p-6 hover:shadow-lg transition-shadow duration-300;
+  }
+}
