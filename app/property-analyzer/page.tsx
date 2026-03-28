@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function PropertyAnalyzerComingSoon() {
   return (
@@ -8,17 +9,14 @@ export default function PropertyAnalyzerComingSoon() {
       <div className="max-w-2xl mx-auto text-center">
         {/* Logo */}
         <div className="mb-8 flex justify-center">
-          <svg
+          <Image
+            src="/logo.png"
+            alt="Aidan Automation logo"
+            width={96}
+            height={96}
             className="w-20 h-20 md:w-24 md:h-24"
-            viewBox="0 0 100 100"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <circle cx="50" cy="50" r="45" fill="none" stroke="#00D9FF" strokeWidth="3" />
-            <line x1="28" y1="75" x2="50" y2="25" stroke="#00D9FF" strokeWidth="4" strokeLinecap="round" />
-            <line x1="72" y1="75" x2="50" y2="25" stroke="#00D9FF" strokeWidth="4" strokeLinecap="round" />
-            <line x1="35" y1="55" x2="65" y2="55" stroke="#00D9FF" strokeWidth="4" strokeLinecap="round" />
-            <path d="M 72 42 Q 88 35 98 52" fill="none" stroke="#00D9FF" strokeWidth="3" strokeLinecap="round" />
-          </svg>
+            priority
+          />
         </div>
 
         {/* Headline */}

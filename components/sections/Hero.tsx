@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function Hero() {
   return (
@@ -9,17 +10,14 @@ export default function Hero() {
         <div className="max-w-3xl mx-auto text-center">
           {/* Logo Large */}
           <div className="mb-8 flex justify-center">
-            <svg
+            <Image
+              src="/logo.png"
+              alt="Aidan Automation logo"
+              width={80}
+              height={80}
               className="w-16 h-16 md:w-20 md:h-20"
-              viewBox="0 0 100 100"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <circle cx="50" cy="50" r="45" fill="none" stroke="#0A5FFF" strokeWidth="3" />
-              <line x1="28" y1="75" x2="50" y2="25" stroke="#0A5FFF" strokeWidth="4" strokeLinecap="round" />
-              <line x1="72" y1="75" x2="50" y2="25" stroke="#0A5FFF" strokeWidth="4" strokeLinecap="round" />
-              <line x1="35" y1="55" x2="65" y2="55" stroke="#0A5FFF" strokeWidth="4" strokeLinecap="round" />
-              <path d="M 72 42 Q 88 35 98 52" fill="none" stroke="#0A5FFF" strokeWidth="3" strokeLinecap="round" />
-            </svg>
+              priority
+            />
           </div>
 
           {/* Headline */}
