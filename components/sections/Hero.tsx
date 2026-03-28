@@ -13,9 +13,9 @@ export default function Hero() {
             <Image
               src="/logo.png"
               alt="Aidan Automation logo"
-              width={80}
-              height={80}
-              className="w-16 h-16 md:w-20 md:h-20"
+              width={200}
+              height={200}
+              className="w-32 h-32 md:w-48 md:h-48"
               priority
             />
           </div>
