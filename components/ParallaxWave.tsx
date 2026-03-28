@@ -20,7 +20,7 @@ export default function ParallaxWave() {
       style={{ zIndex: -1 }}
     >
       <img
-        src="/Aidan BG - 1.1.png"
+        src="/wave-bg.png"
         alt="Wave background"
         className="w-full h-auto absolute"
         style={{
