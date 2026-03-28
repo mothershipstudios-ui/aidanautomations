@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import ParallaxWave from "@/components/ParallaxWave";
 
 export const metadata: Metadata = {
   title: "Aidan Automations | AI Automation Consulting",
@@ -20,6 +21,7 @@ export default function RootLayout({
         <link rel="icon" href="/favicon.ico" />
       </head>
       <body className="antialiased font-sans text-primary-dark bg-white">
+        <ParallaxWave />
         {children}
       </body>
     </html>
