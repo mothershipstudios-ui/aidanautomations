@@ -39,7 +39,7 @@ export default function Footer() {
             <h4 className="font-semibold mb-4 text-cyan">Company</h4>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link href="https://twitter.com/AidanAutomation" target="_blank" className="text-gray-300 hover:text-cyan transition-colors">
+                <Link href="https://twitter.com/AidanAutoAI" target="_blank" className="text-gray-300 hover:text-cyan transition-colors">
                   Twitter
                 </Link>
               </li>
