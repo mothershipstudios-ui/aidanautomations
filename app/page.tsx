@@ -5,6 +5,7 @@ import Hero from '@/components/sections/Hero';
 import Problems from '@/components/sections/Problems';
 import Solutions from '@/components/sections/Solutions';
 import CTASection from '@/components/sections/CTASection';
+import AuditForm from '@/components/sections/AuditForm';
 import Footer from '@/components/Footer';
 
 export default function Home() {
@@ -15,6 +16,7 @@ export default function Home() {
         <Hero />
         <Problems />
         <Solutions />
+        <AuditForm />
         <CTASection />
       </main>
       <Footer />

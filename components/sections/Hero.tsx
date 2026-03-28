@@ -35,14 +35,12 @@ export default function Hero() {
 
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-            <Link
-              href="https://tally.so/r/wA1xXd"
-              target="_blank"
-              rel="noopener noreferrer"
+            <a
+              href="#audit-form"
               className="btn-primary"
             >
               Get Free Automation Audit
-            </Link>
+            </a>
             <a
               href="#problems"
               className="btn-secondary"
