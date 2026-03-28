@@ -13,9 +13,9 @@ export default function Header() {
             <Image
               src="/logo.png"
               alt="Aidan Automation logo"
-              width={48}
-              height={48}
-              className="w-10 h-10 md:w-12 md:h-12"
+              width={96}
+              height={96}
+              className="w-20 h-20 md:w-24 md:h-24"
               priority
             />
             <span className="hidden sm:inline font-bold text-lg text-primary-dark">Aidan Automations</span>
