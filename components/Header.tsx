@@ -24,14 +24,12 @@ export default function Header() {
           </Link>
 
           {/* CTA Button */}
-          <Link
-            href="https://tally.so/r/wA1xXd"
-            target="_blank"
-            rel="noopener noreferrer"
+          <a
+            href="#audit-form"
             className="btn-primary text-sm md:text-base px-4 md:px-6"
           >
             Free Audit
-          </Link>
+          </a>
         </nav>
       </div>
     </header>
