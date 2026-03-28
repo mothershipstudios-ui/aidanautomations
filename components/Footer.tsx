@@ -43,11 +43,6 @@ export default function Footer() {
                   Twitter
                 </Link>
               </li>
-              <li>
-                <Link href="https://github.com" target="_blank" className="text-gray-300 hover:text-cyan transition-colors">
-                  GitHub
-                </Link>
-              </li>
             </ul>
           </div>
 
