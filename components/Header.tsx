@@ -18,7 +18,6 @@ export default function Header() {
               className="w-20 h-20 md:w-24 md:h-24"
               priority
             />
-            <span className="hidden sm:inline font-bold text-lg text-primary-dark">Aidan Automations</span>
           </Link>
 
           {/* CTA Button */}
