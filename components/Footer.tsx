@@ -22,13 +22,8 @@ export default function Footer() {
             <h4 className="font-semibold mb-4 text-cyan">Product</h4>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link href="#" className="text-gray-300 hover:text-cyan transition-colors">
+                <Link href="#audit-form" className="text-gray-300 hover:text-cyan transition-colors">
                   Free Audit
-                </Link>
-              </li>
-              <li>
-                <Link href="https://propertyanalyzerpro.com" target="_blank" className="text-gray-300 hover:text-cyan transition-colors">
-                  PropertyAnalyzer Pro
                 </Link>
               </li>
             </ul>

@@ -24,16 +24,7 @@ export default function CTASection() {
             </a>
           </div>
 
-          {/* Secondary CTA */}
-          <p className="text-white mb-6">
-            Or see what's possible with automation:
-          </p>
-          <Link
-            href="/property-analyzer"
-            className="inline-block border-2 border-white text-white font-semibold px-6 py-3 rounded-md hover:bg-white hover:text-primary transition-all duration-200 transform hover:scale-105"
-          >
-            Explore PropertyAnalyzer Pro →
-          </Link>
+
 
           {/* Info */}
           <p className="text-gray-200 text-sm mt-8">
