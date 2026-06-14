@@ -1,64 +1,158 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import "tailwindcss";
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* ============================================================
+   AIDAN AUTOMATIONS — Tactical Design System (Tailwind v4)
+   Tokens in OKLCH. Neutrals tinted toward blue (~256deg).
+   Signal colors carry meaning: cyan = live/interactive,
+   green = positive status, amber = restricted, never decorative.
+   ============================================================ */
+@theme {
+  /* Surfaces */
+  --color-void:         oklch(0.120 0.018 258);  /* page ground   ~#020914 */
+  --color-obsidian-950: oklch(0.150 0.020 257);
+  --color-obsidian-900: oklch(0.185 0.022 256);  /* raised panel  ~#07111d */
+  --color-obsidian-800: oklch(0.235 0.024 255);
 
-html {
-  scroll-behavior: smooth;
+  /* Hairlines (light tint used at low opacity via /xx modifiers) */
+  --color-line: oklch(0.78 0.03 256);
+
+  /* Text */
+  --color-ink:       oklch(0.970 0.008 250);
+  --color-ink-muted: oklch(0.760 0.020 255);
+  --color-ink-dim:   oklch(0.580 0.025 256);
+
+  /* Signal — strict budget */
+  --color-cyan:      oklch(0.815 0.120 199);  /* PRIMARY: live, interactive, active */
+  --color-cyan-deep: oklch(0.600 0.110 205);
+  --color-telemetry: oklch(0.800 0.160 152);  /* POSITIVE status only */
+  --color-violet:    oklch(0.700 0.130 290);  /* tertiary, sparing */
+  --color-warn:      oklch(0.800 0.130 75);   /* warning / restricted accent */
+  --color-alert:     oklch(0.630 0.200 22);
+
+  /* Legacy compatibility (keeps /property-analyzer styled) */
+  --color-primary:      oklch(0.560 0.200 264);
+  --color-primary-dark: oklch(0.235 0.070 264);
+
+  /* Type lanes — each font one job */
+  --font-display: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
+  --font-body:    var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-mono:    var(--font-jetbrains), ui-monospace, "SF Mono", monospace;
+
+  /* Motion — ease OUT only */
+  --ease-out-expo:  cubic-bezier(0.16, 1, 0.30, 1);
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.50, 1);
+
+  /* Registered animations -> animate-blip / animate-scan / animate-drift */
+  --animate-blip:  blip 2.4s var(--ease-out-quart) infinite;
+  --animate-scan:  scan 2.6s linear infinite;
+  --animate-drift: drift 22s linear infinite;
 }
 
-body {
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
+@keyframes blip  { 0%, 100% { opacity: 1 } 50% { opacity: 0.30 } }
+@keyframes scan  { 0% { transform: translateY(-120%) } 100% { transform: translateY(1200%) } }
+@keyframes drift { from { transform: translateY(0) } to { transform: translateY(56px) } }
 
-/* Accessibility: Respect prefers-reduced-motion */
-@media (prefers-reduced-motion: reduce) {
-  * {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
+/* ============================================================
+   BASE
+   ============================================================ */
+@layer base {
+  html {
+    color-scheme: dark;
+    scroll-behavior: smooth;
+  }
+  body {
+    min-width: 320px;
+    background:
+      radial-gradient(115% 80% at 85% -10%, color-mix(in oklch, var(--color-cyan) 9%, transparent), transparent 45%),
+      radial-gradient(90% 70% at 0% 0%, color-mix(in oklch, var(--color-violet) 8%, transparent), transparent 42%),
+      linear-gradient(180deg, var(--color-void) 0%, oklch(0.135 0.02 257) 50%, var(--color-obsidian-950) 100%);
+    background-attachment: fixed;
+    color: var(--color-ink);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Fixed ambient grid — ONE texture, masked to a top vignette */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background-image:
+      linear-gradient(to right,  color-mix(in oklch, var(--color-line) 100%, transparent) 1px, transparent 1px),
+      linear-gradient(to bottom, color-mix(in oklch, var(--color-line) 100%, transparent) 1px, transparent 1px);
+    background-size: 64px 64px;
+    opacity: 0.05;
+    mask-image: linear-gradient(180deg, #000 0%, transparent 75%);
+  }
+
+  ::selection {
+    background: color-mix(in oklch, var(--color-cyan) 30%, transparent);
+    color: var(--color-ink);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-cyan);
+    outline-offset: 3px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+    }
   }
 }
 
-/* Smooth transitions for interactive elements */
-button,
-a,
-input,
-select,
-textarea {
-  transition: all 200ms ease-out;
+/* ============================================================
+   UTILITIES
+   ============================================================ */
+
+/* Local structural grid for panels/sections (component-scoped) */
+@utility bg-grid {
+  background-image:
+    linear-gradient(to right,  color-mix(in oklch, var(--color-line) 100%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in oklch, var(--color-line) 100%, transparent) 1px, transparent 1px);
+  background-size: 48px 48px;
+  opacity: 0.06;
 }
 
-/* Focus styles for accessibility */
-:focus-visible {
-  outline: 2px solid #00d9ff;
-  outline-offset: 2px;
+/* Sharp cut corner — the signature frame shape */
+@utility clip-notch {
+  clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));
+}
+@utility clip-notch-sm {
+  clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
 }
 
-@layer components {
-  .btn-primary {
-    @apply px-6 py-3 bg-primary text-white font-semibold rounded-md text-base hover:bg-cyan transition-all duration-200 cursor-pointer flex items-center justify-center;
-  }
-
-  .btn-secondary {
-    @apply px-6 py-3 border-2 border-primary text-primary font-semibold rounded-md text-base hover:bg-blue-50 transition-all duration-200 cursor-pointer flex items-center justify-center;
-  }
-
-  .btn-ghost {
-    @apply text-primary font-semibold hover:text-cyan underline decoration-2 underline-offset-2 transition-colors duration-200 cursor-pointer;
-  }
-
-  .container-main {
-    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
-  }
-
-  .section-padding {
-    @apply py-12 sm:py-16 lg:py-20;
-  }
-
-  .feature-card {
-    @apply bg-white border border-gray-200 rounded-lg p-6 hover:shadow-lg transition-shadow duration-300;
-  }
+/* Terminal / telemetry micro-label */
+@utility label-mono {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;        /* 11px */
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-ink-dim);
 }
+
+/* ============================================================
+   MOTION INFRASTRUCTURE
+   ============================================================ */
+
+/* Lenis smooth scroll */
+html.lenis,
+html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+.lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
+.lenis.lenis-stopped { overflow: hidden; }
+
+/* Custom cursor: hide native cursor when JS-driven reticle is active */
+.cursor-none,
+.cursor-none * { cursor: none !important; }
+
+/* Marquee track */
+@keyframes marquee { to { transform: translateX(-100%); } }

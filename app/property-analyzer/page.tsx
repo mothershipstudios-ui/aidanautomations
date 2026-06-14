@@ -34,7 +34,7 @@ export default function PropertyAnalyzerComingSoon() {
         </p>
 
         {/* Features */}
-        <div className="bg-white bg-opacity-10 rounded-lg p-8 mb-12 backdrop-blur">
+        <div className="bg-white/10 rounded-lg p-8 mb-12 backdrop-blur">
           <h2 className="text-2xl font-bold mb-6">What You'll Get</h2>
           <ul className="space-y-4 text-left max-w-md mx-auto">
             <li className="flex items-start gap-3">

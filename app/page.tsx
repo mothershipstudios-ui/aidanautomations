@@ -1,25 +1,36 @@
-'use client';
-
-import Header from '@/components/Header';
-import Hero from '@/components/sections/Hero';
-import Problems from '@/components/sections/Problems';
-import Solutions from '@/components/sections/Solutions';
-import CTASection from '@/components/sections/CTASection';
-import AuditForm from '@/components/sections/AuditForm';
-import Footer from '@/components/Footer';
+import { SmoothScroll } from "@/components/fx/SmoothScroll";
+import { Loader } from "@/components/fx/Loader";
+import { CustomCursor } from "@/components/fx/CustomCursor";
+import { FieldBackground } from "@/components/fx/FieldBackground";
+import { Marquee } from "@/components/fx/Marquee";
+import { Nav } from "@/components/site/Nav";
+import { Hero } from "@/components/site/Hero";
+import { SystemsShowcase } from "@/components/site/SystemsShowcase";
+import { SystemsBackground } from "@/components/site/SystemsBackground";
+import { Method } from "@/components/site/Method";
+import { ClosingCTA } from "@/components/site/ClosingCTA";
+import { SiteFooter } from "@/components/site/SiteFooter";
 
 export default function Home() {
   return (
     <>
-      <Header />
-      <main>
-        <Hero />
-        <Problems />
-        <Solutions />
-        <AuditForm />
-        <CTASection />
-      </main>
-      <Footer />
+      <Loader />
+      <CustomCursor />
+      <FieldBackground />
+      <SmoothScroll>
+        <Nav />
+        <div className="relative z-10">
+          <main>
+            <Hero />
+            <Marquee />
+            <SystemsShowcase />
+            <SystemsBackground />
+            <Method />
+            <ClosingCTA />
+          </main>
+          <SiteFooter />
+        </div>
+      </SmoothScroll>
     </>
   );
 }
