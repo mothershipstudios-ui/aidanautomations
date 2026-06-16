@@ -4,10 +4,11 @@ import { useEffect, useRef } from "react";
 import * as THREE from "three";
 
 /**
- * Cursor- and scroll-reactive volumetric particle lattice.
- * The signature "core". Additive cyan/violet points in 3D depth, a ripple
- * that follows the pointer, camera parallax, and a scroll-driven push-back.
- * Reduced-motion renders a single static frame. Pauses when offscreen/hidden.
+ * Cursor- and scroll-reactive volumetric particle TUNNEL.
+ * Particles fill a 3D depth slab; scrolling dollies through it (z-axis travel),
+ * near points rushing past while far ones fade in, with a gentle constant drift
+ * so it breathes at rest. A cyan focus halo tracks the pointer. Additive,
+ * cyan (near) -> violet (far). Reduced-motion renders a single static frame.
  */
 export function WebGLField() {
   const ref = useRef<HTMLDivElement>(null);
@@ -30,35 +31,32 @@ export function WebGLField() {
 
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
     renderer.setPixelRatio(dpr);
-    let w = mount.clientWidth || window.innerWidth;
-    let h = mount.clientHeight || window.innerHeight;
+    // Field is a full-viewport fixed layer: size from the viewport, never from
+    // clientWidth (which can be 0 at mount and break the drawing buffer).
+    let w = window.innerWidth;
+    let h = window.innerHeight;
     renderer.setSize(w, h);
     renderer.domElement.style.width = "100%";
     renderer.domElement.style.height = "100%";
     mount.appendChild(renderer.domElement);
 
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(60, w / h, 0.1, 100);
-    camera.position.set(0, 0, 14);
+    const camera = new THREE.PerspectiveCamera(70, w / h, 0.1, 200);
+    camera.position.set(0, 0, 0);
 
-    const COLS = 130;
-    const ROWS = 76;
-    const COUNT = COLS * ROWS;
+    const COUNT = 7000;
+    const DEPTH = 60;
+    const spanX = 64;
+    const spanY = 42;
     const positions = new Float32Array(COUNT * 3);
     const aPhase = new Float32Array(COUNT);
     const aRand = new Float32Array(COUNT);
-    const spanX = 40;
-    const spanY = 24;
-    let i = 0;
-    for (let x = 0; x < COLS; x++) {
-      for (let y = 0; y < ROWS; y++) {
-        positions[i * 3] = (x / (COLS - 1) - 0.5) * spanX;
-        positions[i * 3 + 1] = (y / (ROWS - 1) - 0.5) * spanY;
-        positions[i * 3 + 2] = 0;
-        aPhase[i] = Math.random() * Math.PI * 2;
-        aRand[i] = Math.random();
-        i++;
-      }
+    for (let i = 0; i < COUNT; i++) {
+      positions[i * 3] = (Math.random() - 0.5) * spanX;
+      positions[i * 3 + 1] = (Math.random() - 0.5) * spanY;
+      positions[i * 3 + 2] = Math.random() * DEPTH; // zBase within the depth slab
+      aPhase[i] = Math.random() * Math.PI * 2;
+      aRand[i] = Math.random();
     }
     const geo = new THREE.BufferGeometry();
     geo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
@@ -68,7 +66,7 @@ export function WebGLField() {
     const uniforms = {
       uTime: { value: 0 },
       uMouse: { value: new THREE.Vector2(0, 0) },
-      uScroll: { value: 0 },
+      uTravel: { value: 0 },
       uColorA: { value: new THREE.Color("#28d7e7") },
       uColorB: { value: new THREE.Color("#8f7bf5") },
       uDpr: { value: dpr },
@@ -80,29 +78,32 @@ export function WebGLField() {
       blending: THREE.AdditiveBlending,
       uniforms,
       vertexShader: `
-        uniform float uTime; uniform vec2 uMouse; uniform float uScroll; uniform float uDpr;
+        uniform float uTime; uniform vec2 uMouse; uniform float uTravel; uniform float uDpr;
         attribute float aPhase; attribute float aRand;
         varying float vGlow; varying float vMix;
+        const float DEPTH = 60.0;
         void main() {
-          vec3 p = position;
-          float t = uTime * 0.5;
-          float wave = sin(p.x * 0.25 + t + aPhase) * cos(p.y * 0.30 - t * 0.8 + aPhase);
-          p.z += wave * 1.8;
-          vec2 m = uMouse * vec2(20.0, 12.0);
+          // Depth travel: zEff decreases as uTravel grows, so points approach the camera.
+          float zEff = mod(position.z - uTravel, DEPTH);
+          float zPos = -(zEff + 2.0);
+          vec3 p = vec3(position.x, position.y, zPos);
+          // Gentle living drift in xy.
+          float t = uTime * 0.4;
+          p.x += sin(t + aPhase) * 0.5;
+          p.y += cos(t * 0.9 + aPhase) * 0.5;
+          // Cursor focus: a bright column tracking the pointer, pulled toward camera.
+          vec2 m = uMouse * vec2(26.0, 16.0);
           float d = distance(p.xy, m);
-          // Spotlight of importance: tight bright cyan core at the cursor, quick falloff.
-          float focus = exp(-d * d * 0.04);
-          // Lift the field toward the cursor for a subtle 3D bulge.
-          float ripple = exp(-d * 0.30) * 1.2;
-          p.z += ripple + focus * 1.8;
-          p.z -= uScroll * 7.0;
-          p.y += uScroll * 2.0;
+          float focus = exp(-d * d * 0.03);
+          p.z += focus * 2.0;
           vec4 mv = modelViewMatrix * vec4(p, 1.0);
           gl_Position = projectionMatrix * mv;
-          float size = (1.7 + aRand * 1.8) * uDpr;
-          gl_PointSize = size * (12.0 / -mv.z) * (1.0 + focus * 2.0);
-          vGlow = clamp(0.22 + wave * 0.30 + focus * 2.1, 0.0, 2.25);
-          vMix = clamp((p.z + 4.0) / 10.0, 0.0, 1.0);
+          float size = (1.6 + aRand * 1.9) * uDpr;
+          gl_PointSize = size * (16.0 / -mv.z) * (1.0 + focus * 2.0);
+          // Fade out as points reach the camera, fade in from the far plane.
+          float fade = smoothstep(0.0, 10.0, zEff) * smoothstep(DEPTH, DEPTH - 16.0, zEff);
+          vGlow = clamp((0.46 + focus * 2.0) * fade, 0.0, 2.25);
+          vMix = clamp(zEff / DEPTH, 0.0, 1.0);
         }
       `,
       fragmentShader: `
@@ -114,9 +115,9 @@ export function WebGLField() {
           float dd = length(c);
           if (dd > 0.5) discard;
           float alpha = smoothstep(0.5, 0.0, dd);
-          // Stay in the cyan/violet family; brightness comes from glow, never white.
-          vec3 col = mix(uColorA, uColorB, vMix * 0.55);
-          gl_FragColor = vec4(col * vGlow, alpha * (0.32 + vGlow * 0.4));
+          // Cyan up close, violet in the distance. Brightness via glow, never white.
+          vec3 col = mix(uColorA, uColorB, vMix * 0.7);
+          gl_FragColor = vec4(col * vGlow, alpha * (0.3 + vGlow * 0.4));
         }
       `,
     });
@@ -132,16 +133,16 @@ export function WebGLField() {
     };
     window.addEventListener("pointermove", onMove);
 
-    let scrollT = 0;
-    let targetScroll = 0;
+    let travel = 0;
+    let targetTravel = 0;
     const onScroll = () => {
-      targetScroll = Math.min(window.scrollY / window.innerHeight, 1.3);
+      targetTravel = window.scrollY * 0.02; // uncapped: dolly scales with full-page scroll
     };
     window.addEventListener("scroll", onScroll, { passive: true });
 
     const onResize = () => {
-      w = mount.clientWidth || window.innerWidth;
-      h = mount.clientHeight || window.innerHeight;
+      w = window.innerWidth;
+      h = window.innerHeight;
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
       renderer.setSize(w, h);
@@ -157,13 +158,13 @@ export function WebGLField() {
     const render = () => {
       const el = clock.getElapsedTime();
       mouse.lerp(targetMouse, 0.06);
-      scrollT += (targetScroll - scrollT) * 0.08;
+      travel += (targetTravel - travel) * 0.07;
       uniforms.uTime.value = el;
       uniforms.uMouse.value.copy(mouse);
-      uniforms.uScroll.value = scrollT;
-      camera.position.x += (mouse.x * 2.4 - camera.position.x) * 0.05;
-      camera.position.y += (mouse.y * 1.5 - camera.position.y) * 0.05;
-      camera.lookAt(0, 0, 0);
+      uniforms.uTravel.value = travel + el * 0.45; // scroll dolly + gentle constant drift
+      camera.position.x += (mouse.x * 2.6 - camera.position.x) * 0.04;
+      camera.position.y += (mouse.y * 1.6 - camera.position.y) * 0.04;
+      camera.lookAt(camera.position.x, camera.position.y, -10);
       renderer.render(scene, camera);
     };
 
