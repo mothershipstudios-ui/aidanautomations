@@ -85,11 +85,7 @@ function StationContent({ s, active }: { s: Station; active: boolean }) {
       </div>
 
       <h2 className="mt-7 font-display text-[clamp(2.5rem,8vw,7rem)] font-medium leading-[0.88] tracking-[-0.03em] text-ink">
-        {active ? (
-          <Scramble key={s.rail} trigger="mount" speed={1.4} delay={400} text={s.lines[0]} className="block" />
-        ) : (
-          <span className="block">{s.lines[0]}</span>
-        )}
+        <Scramble speed={1.4} active={active} text={s.lines[0]} className="block" />
         <span className="block text-cyan">{s.lines[1]}</span>
       </h2>
 
