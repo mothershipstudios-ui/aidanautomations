@@ -13,11 +13,13 @@ export function Scramble({
   className = "",
   speed = 1,
   trigger = "view",
+  delay = 0,
 }: {
   text: string;
   className?: string;
   speed?: number;
   trigger?: "view" | "mount";
+  delay?: number;
 }) {
   const ref = useRef<HTMLSpanElement>(null);
   const [out, setOut] = useState(text);
@@ -31,6 +33,7 @@ export function Scramble({
     }
 
     let raf = 0;
+    let timer = 0;
     const run = () => {
       if (done.current) return;
       done.current = true;
@@ -58,7 +61,11 @@ export function Scramble({
     };
 
     if (trigger === "mount") {
-      run();
+      if (delay > 0) {
+        timer = window.setTimeout(run, delay);
+      } else {
+        run();
+      }
     } else {
       const el = ref.current;
       if (!el) return;
@@ -74,8 +81,8 @@ export function Scramble({
       io.observe(el);
       return () => io.disconnect();
     }
-    return () => cancelAnimationFrame(raf);
-  }, [text, speed, trigger]);
+    return () => { cancelAnimationFrame(raf); clearTimeout(timer); };
+  }, [text, speed, trigger, delay]);
 
   return (
     <span ref={ref} className={className}>
