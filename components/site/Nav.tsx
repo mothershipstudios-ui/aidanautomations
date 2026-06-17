@@ -1,30 +1,26 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { StatusBlip } from "@/components/ui/StatusBlip";
 import { easeOutExpo } from "@/lib/motion";
 
 const auditHref =
-  "mailto:aidan@aidanautomations.com?subject=Project%20Mycelium%20Private%20Audit";
+  "mailto:aidan@aidanautomations.com?subject=Free%20AI%20Audit";
 
-const LINKS = [
-  { label: "Work", href: "#work" },
-  { label: "Method", href: "#method" },
+// Journey has 6 stations (0–5); station 4 = Method, station 5 = Contact.
+// ScrollTrigger end = (total - 1) * vh * 3.45 = 5 * vh * 3.45
+// Scroll to station i = i * vh * 3.45
+function scrollToStation(i: number) {
+  window.scrollTo({ top: i * window.innerHeight * 3.45, behavior: "smooth" });
+}
+
+const LINKS: { label: string; href?: string; onClick?: () => void }[] = [
+  { label: "Work", onClick: () => window.scrollTo({ top: 0, behavior: "smooth" }) },
+  { label: "Method", onClick: () => scrollToStation(4) },
   { label: "Contact", href: "#contact" },
 ];
-
-function Clock() {
-  const [t, setT] = useState<string | null>(null);
-  useEffect(() => {
-    const tick = () => setT(new Date().toISOString().slice(11, 19) + " UTC");
-    tick();
-    const id = setInterval(tick, 1000);
-    return () => clearInterval(id);
-  }, []);
-  return <span className="label-mono tabular-nums">{t ?? "--:--:-- UTC"}</span>;
-}
 
 export function Nav() {
   const reduce = useReducedMotion();
@@ -58,14 +54,15 @@ export function Nav() {
           onMouseLeave={() => setHovered(null)}
         >
           {LINKS.map((l) => (
-            <li key={l.href} className="relative" onMouseEnter={() => setHovered(l.href)}>
+            <li key={l.label} className="relative" onMouseEnter={() => setHovered(l.label)}>
               <a
-                href={l.href}
+                href={l.href ?? "#"}
+                onClick={l.onClick ? (e) => { e.preventDefault(); l.onClick!(); } : undefined}
                 className="relative z-10 block px-4 py-2 font-mono text-xs uppercase tracking-[0.16em] text-ink-muted transition-colors hover:text-ink"
               >
                 {l.label}
               </a>
-              {hovered === l.href && (
+              {hovered === l.label && (
                 <motion.span
                   layoutId="nav-trace"
                   className="absolute inset-x-2 bottom-1 h-px bg-cyan"
@@ -77,13 +74,12 @@ export function Nav() {
         </ul>
 
         <div className="hidden items-center gap-5 lg:flex">
-          <Clock />
           <StatusBlip tone="ok" label="SYS · ONLINE" />
           <a
             href={auditHref}
             className="group relative overflow-hidden border border-cyan/40 px-4 py-2 font-mono text-xs uppercase tracking-[0.16em] text-cyan clip-notch-sm"
           >
-            <span className="relative z-10">Private audit</span>
+            <span className="relative z-10">Free audit</span>
             <span className="absolute inset-0 -translate-x-full bg-cyan/10 transition-transform duration-500 ease-out group-hover:translate-x-0" />
           </a>
         </div>
@@ -107,11 +103,11 @@ export function Nav() {
             transition={{ duration: 0.4, ease: easeOutExpo }}
             className="overflow-hidden border-t border-line/10 md:hidden"
           >
-            {[...LINKS, { label: "Private audit", href: auditHref }].map((l) => (
-              <li key={l.href} className="border-b border-line/10 last:border-0">
+            {[...LINKS, { label: "Free audit", href: auditHref }].map((l) => (
+              <li key={l.label} className="border-b border-line/10 last:border-0">
                 <a
-                  href={l.href}
-                  onClick={() => setOpen(false)}
+                  href={l.href ?? "#"}
+                  onClick={(e) => { if (l.onClick) { e.preventDefault(); l.onClick(); } setOpen(false); }}
                   className="block px-5 py-4 font-mono text-xs uppercase tracking-[0.16em] text-ink-muted"
                 >
                   {l.label}
